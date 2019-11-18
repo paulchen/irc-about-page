@@ -1,15 +1,13 @@
 <?php /* <div class="language"><a href="<?php echo $language_links['de']; ?>" title="Deutsch"><img alt="Deutsch" src="/images/de.png" /></a></div> */ ?>
 <?php
-require_once(dirname(__FILE__) . '/../lib/icinga-status.php');
-
 $services = array(
-	array('description' => 'ircd IPv4 Port 6667 (non-SSL)', 'host' => 'alpha', 'service' => 'ircd IPv4 non-ssl'),
-	array('description' => 'ircd IPv4 Port 6697 (SSL)', 'host' => 'alpha', 'service' => 'ircd IPv4 ssl'),
-	array('description' => 'ircd IPv4 Port 7776 (non-SSL)', 'host' => 'alpha', 'service' => 'ircd IPv4 non-ssl 7776'),
+	array('description' => 'ircd IPv4 Port 6667 (non-SSL)', 'host' => 'alpha', 'service' => 'ircd non-ssl'),
+	array('description' => 'ircd IPv4 Port 6697 (SSL)', 'host' => 'alpha', 'service' => 'ircd ssl'),
+	array('description' => 'ircd IPv4 Port 7776 (non-SSL)', 'host' => 'alpha', 'service' => 'ircd non-ssl 7776'),
 
-	array('description' => 'ircd IPv6 Port 6667 (non-SSL)', 'host' => 'irc6', 'service' => 'ircd IPv6 non-ssl'),
-	array('description' => 'ircd IPv6 Port 6697 (SSL)', 'host' => 'irc6', 'service' => 'ircd IPv6 ssl'),
-	array('description' => 'ircd IPv6 Port 7776 (non-SSL)', 'host' => 'irc6', 'service' => 'ircd IPv6 non-ssl 7776'),
+	array('description' => 'ircd IPv6 Port 6667 (non-SSL)', 'host' => 'irc6', 'service' => 'ircd non-ssl'),
+	array('description' => 'ircd IPv6 Port 6697 (SSL)', 'host' => 'irc6', 'service' => 'ircd ssl'),
+	array('description' => 'ircd IPv6 Port 7776 (non-SSL)', 'host' => 'irc6', 'service' => 'ircd non-ssl 7776'),
 
 	array('description' => 'Tor hidden service Port 6667 (non-SSL)', 'host' => 'alpha', 'service' => 'ircd IPv4 localhost non-ssl'),
 	array('description' => 'Tor hidden service Port 6697 (SSL)', 'host' => 'alpha', 'service' => 'ircd IPv4 localhost ssl'),
@@ -19,17 +17,22 @@ $services = array(
 	array('description' => 'Virtual host irc.rueckgr.at IPv4 non-SSL', 'host' => 'alpha', 'service' => 'vhost irc.rueckgr.at'),
 	array('description' => 'Virtual host irc.rueckgr.at IPv4 SSL', 'host' => 'alpha', 'service' => 'vhost irc.rueckgr.at ssl'),
 
-	array('description' => 'Virtual host irc.rückgr.at IPv4 non-SSL', 'host' => 'alpha', 'service' => 'vhost irc.rückgr.at'),
-	array('description' => 'Virtual host irc.rückgr.at IPv4 SSL', 'host' => 'alpha', 'service' => 'vhost irc.rückgr.at ssl'),
-
-	array('description' => 'Virtual host irc.rueckgr.at IPv6 non-SSL', 'host' => 'irc6', 'service' => 'vhost irc.rueckgr.at'),
-	array('description' => 'Virtual host irc.rueckgr.at IPv6 SSL', 'host' => 'irc6', 'service' => 'vhost irc.rueckgr.at ssl'),
-
-	array('description' => 'Virtual host irc.rückgr.at IPv6 non-SSL', 'host' => 'irc6', 'service' => 'vhost irc.rückgr.at'),
-	array('description' => 'Virtual host irc.rückgr.at IPv6 SSL', 'host' => 'irc6', 'service' => 'vhost irc.rückgr.at ssl'),
+	array('description' => 'Virtual host irc.rueckgr.at IPv6 non-SSL', 'host' => 'alpha', 'service' => 'vhost irc.rueckgr.at'),
+	array('description' => 'Virtual host irc.rueckgr.at IPv6 SSL', 'host' => 'alpha', 'service' => 'vhost irc.rueckgr.at ssl'),
 
 	array('description' => 'IRC services', 'host' => 'alpha', 'service' => 'IRC services'),
 );
+
+$filter_parts = array();
+foreach($services as $service) {
+	$host_name = $service['host'];
+	$service_name = $service['service'];
+
+	$filter_parts[] = "(host.name == \"$host_name\" && service.name == \"$service_name\")"; 
+}
+$filter = implode(' || ', $filter_parts);
+
+require_once(dirname(__FILE__) . '/../lib/icinga-status.php');
 
 function find_service_data($service) {
 	global $icinga_service_data;

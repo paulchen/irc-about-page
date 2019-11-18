@@ -1,52 +1,51 @@
 <?php
+require_once(dirname(__FILE__) . '/config.php');
 
-if(!isset($icinga_status_file)) {
-	$icinga_status_file = '/var/lib/icinga/status.dat';
+$request_url = "https://$icinga_host:5665/v1/objects/services";
+$headers = array(
+        'Accept: application/json',
+        'X-HTTP-Method-Override: GET'
+);
+$data = array(
+	'attrs' => array('state', 'host_name', 'display_name'),
+	'filter' => $filter
+);
+
+$ch = curl_init();
+curl_setopt_array($ch, array(
+        CURLOPT_URL => $request_url,
+        CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_USERPWD => $api_username . ":" . $api_password,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST => count($data),
+        CURLOPT_POSTFIELDS => json_encode($data)
+));
+
+$response = curl_exec($ch);
+if ($response === false) {
+        die();
 }
 
-// $host = 'tiss';
-// $service = 'vhost tiss.tuwien.ac.at ssl';
+$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
 
-$handle = fopen($icinga_status_file, 'r');
+if ($code != 200) {
+        die();
+}
+$response = json_decode($response, true);
 $icinga_service_data = array();
-if($handle) {
-	$current_service_data = array();
-	$current_host = '';
-	$current_service = '';
-	$skip = true;
-	while(($line = fgets($handle)) !== false) {
-		$line = trim($line);
-		if($line == 'servicestatus {') {
-			$skip = false;
-			$current_service_data = array();
-		}
-		else if($line == '}') {
-			if(!$skip && count($current_service_data) > 0) {
-				if(!isset($icinga_service_data[$current_host])) {
-					$icinga_service_data[$current_host] = array();
-				}
-				$icinga_service_data[$current_host][$current_service] = $current_service_data;
-			}
-			$skip = true;
-		}
-		else if(!$skip) {
-			if(strpos($line, '=') !== false) {
-				$parts = explode('=', $line);
+foreach($response['results'] as $result) {
+	$attrs = $result['attrs'];
 
-				$key = array_shift($parts);
-				$value = implode('=', $parts);
+	$state = $attrs['state'];
+	$host_name = $attrs['host_name'];
+	$display_name = $attrs['display_name'];
 
-				if($key == 'host_name') {
-					$current_host = $value;
-				}
-				else if($key == 'service_description') {
-					$current_service = $value;
-				}
-				$current_service_data[$key] = $value;
-			}
-		}
+	if(!isset($icinga_service_data[$host_name])) {
+		$icinga_service_data[$host_name] = array();
 	}
-	fclose($handle);
+	$icinga_service_data[$host_name][$display_name] = array('current_state' => $state);
 }
+
 
 
