@@ -77,10 +77,10 @@ function find_service_data($service) {
 	</div>
 
 	<p style="text-align: center;">
-		<img src="graphs/ircu_cached-day.png" alt="" /><br />
-		<img src="graphs/ircu_cached-week.png" alt="" /><br />
-		<img src="graphs/ircu_cached-month.png" alt="" /><br />
-		<img src="graphs/ircu_cached-year.png" alt="" /><br />
+		<img src="graphs/ircu-day.png" alt="" /><br />
+		<img src="graphs/ircu-week.png" alt="" /><br />
+		<img src="graphs/ircu-month.png" alt="" /><br />
+		<img src="graphs/ircu-year.png" alt="" /><br />
 	</p>
 
 	<hr />
