@@ -31,10 +31,6 @@ if(!isset($_REQUEST['request'])) {
 }
 
 switch($_REQUEST['request']) {
-	case 'status':
-		require_once("$templates_dir/status.php");
-		break;
-
 	case '':
 		if(!file_exists("$templates_dir/index_$lang.php")) {
 			header("Location: /$default_lang/");

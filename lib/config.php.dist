@@ -1,5 +1,0 @@
-<?php
-$api_username = '';
-$api_password = '';
-$icinga_host = '';
-
