@@ -1,5 +1,5 @@
 <?php
-if(!preg_match('/^[a-z]+/', $lang)) {
+if(!isset($lang) || !preg_match('/^[a-z]+/', $lang)) {
 	die();
 }
 
